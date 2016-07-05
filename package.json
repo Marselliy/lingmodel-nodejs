@@ -1,0 +1,10 @@
+{
+  "name": "lingmodel-nodejs",
+  "version": "0.1.0",
+  "author": "Marselliy <sariksariksarik@gmail.com>",
+  "description": "Data series categorization module",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "readmeFilename": "README.md"
+}
