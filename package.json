@@ -1,10 +1,26 @@
 {
   "name": "lingmodel-nodejs",
-  "version": "0.1.0",
-  "author": "Marselliy <sariksariksarik@gmail.com>",
+  "version": "0.1.1",
+  "author": "Vlad Sarnatsky <sariksariksarik@gmail.com>",
   "description": "Data series categorization module",
   "license": "MIT",
-  "dependencies": {
+  "dependencies": {},
+  "main": "./src",
+  "directories": {
   },
-  "readmeFilename": "README.md"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Marselliy/lingmodel-nodejs.git"
+  },
+  "keywords": [
+    "data",
+    "modelling",
+    "categorization",
+    "classification",
+    "ai"
+  ],
+  "bugs": {
+    "url": "https://github.com/Marselliy/lingmodel-nodejs/issues"
+  },
+  "homepage": "https://github.com/Marselliy/lingmodel-nodejs#readme"
 }
