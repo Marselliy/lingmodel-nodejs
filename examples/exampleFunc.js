@@ -31,7 +31,7 @@ categorizer.train(
 ], 'Quadratic');
 
 /**
- * Train categorizer with expontial function
+ * Train categorizer with exponential function
  */
 categorizer.train(
 [
