@@ -1,4 +1,4 @@
-# lingmodel-nodejs
+# lingmodel-nodejs [![npm version](https://badge.fury.io/js/lingmodel-nodejs.svg)](https://badge.fury.io/js/lingmodel-nodejs)
 Module for data series categorization, based on linguistic modelling approach.
 ##Installation
 **Install module:**
