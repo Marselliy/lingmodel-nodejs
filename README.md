@@ -25,31 +25,27 @@ categorizer.train(
 [
   {
     data : [1,3,5,7,9,11,13,15,17,19,21,23,25],
-    name : 'y'
+    name : 'y',
+    category : 'Linear'
   }
-], 'Linear');
+]);
 ```
 
-**Train categorizer with quadratic function:**
+**Train categorizer with quadratic and exponential functions:**
 ```js
 categorizer.train(
 [
   {
     data : [1,4,9,16,25,36,49,64,81,100,121,144,169],
-    name : 'y'
-  }
-], 'Quadratic');
-```
-
-**Train categorizer with exponential function:**
-```js
-categorizer.train(
-[
+    name : 'y',
+    category : 'Quadratic'
+  },
   {
     data : [1,2,4,8,16,32,64,128,256,512,1024,2048,4096],
-    name : 'y'
+    name : 'y',
+    category : 'Exponential'
   }
-], 'Exponential');
+]);
 ```
 
 **Categorize unknown function:**
