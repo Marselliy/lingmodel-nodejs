@@ -4,9 +4,6 @@ module.exports.getCategorizer = function (alphabet, intervalization_method, derC
 
   categorizer = {isTraining : true, alphabet : alphabet, method : intervalization_method, derCount : derCount, cumulative : {}, result : {}};
 
-  /**
-   * Trains categorizer with single dataset
-   */
   categorizer.trainSingle = function (dataset, setname, category) {
     if (!this.isTraining) {
       this.result = JSON.parse(JSON.stringify(this.cumulative));
@@ -24,48 +21,43 @@ module.exports.getCategorizer = function (alphabet, intervalization_method, derC
       this.isTraining = true;
     };
     model = lingmodel.getLinguisticModel(dataset, alphabet, intervalization_method, derCount);
-    this.cumulative[category] = this.cumulative[category] || {};
-    this.cumulative[category].name = category;
-    this.cumulative[category].models = this.cumulative[category].models || {};
-    this.cumulative[category].models[setname] = this.cumulative[category].models[setname] || {};
-    if (this.cumulative[category].models[setname].alphabet == undefined) {
-      this.cumulative[category].models[setname] = model;
-      this.cumulative[category].count = 1;
+    this.cumulative[setname] = this.cumulative[setname] || {};
+    this.cumulative[setname].name = setname;
+    this.cumulative[setname].categories = this.cumulative[setname].categories || {};
+    this.cumulative[setname].categories[category] = this.cumulative[setname].categories[category] || {};
+    if (this.cumulative[setname].categories[category].alphabet == undefined) {
+      this.cumulative[setname].categories[category] = model;
+      this.cumulative[setname].categories[category].count = 1;
     } else {
-      knownModel = this.cumulative[category].models[setname];
+      knownModel = this.cumulative[setname].categories[category];
       for (var der = 0; der <= knownModel.derCount; der++) {
-          for (var i = 0; i < knownModel.matrixes[der].length; i++) {
-              for (var j = 0; j < knownModel.matrixes[der].length; j++) {
+          for (var i in knownModel.matrixes[der]) {
+              for (var j in knownModel.matrixes[der][i]) {
                   knownModel.matrixes[der][i][j] += model.matrixes[der][i][j];
               };
           };
       };
-      this.cumulative[category].count++;
+      this.cumulative[setname].categories[category].count++;
     };
   };
 
-  /**
-   * Trains categorizer with multiple datasets
-   */
-  categorizer.train = function (datasets, category) {
+  categorizer.train = function (datasets) {
     for (var key in datasets) {
-      this.trainSingle(datasets[key].data, datasets[key].name, category);
+      this.trainSingle(datasets[key].data, datasets[key].name, datasets[key].category);
     };
   }
 
-  /**
-   * Called before categorization. Calculates resulting knowledge base
-   */
   categorizer.endTraining = function () {
     if (this.isTraining) {
       this.isTraining = false;
       this.result = JSON.parse(JSON.stringify(this.cumulative));
-      for (var catKey in this.result) {
-        for (var modKey in this.result[catKey].models) {
-          for (var matrKey in this.result[catKey].models[modKey].matrixes) {
-            for (var i = 0; i < this.result[catKey].models[modKey].matrixes[matrKey].length; i++) {
-              for (var j = 0; j < this.result[catKey].models[modKey].matrixes[matrKey][i].length; j++) {
-                this.result[catKey].models[modKey].matrixes[matrKey][i][j] /= this.result[catKey].count;
+      for (var setKey in this.result) {
+        for (var catKey in this.result[setKey].categories) {
+          for (var matrKey in this.result[setKey].categories[catKey].matrixes) {
+            for (var i in this.result[setKey].categories[catKey].matrixes[matrKey]) {
+              for (var j in this.result[setKey].categories[catKey].matrixes[matrKey][i]) {
+                this.result[setKey].categories[catKey].matrixes[matrKey][i][j] /= this.result[setKey].categories[catKey].count;
+
               };
             };
           };
@@ -74,40 +66,30 @@ module.exports.getCategorizer = function (alphabet, intervalization_method, derC
     };
   };
 
-  /**
-   * Returns category for datasets
-   */
-  categorizer.categorize = function(datasets) {
+  categorizer.categorize = function(dataset) {
     if (this.isTraining) {
       this.endTraining();
     }
-    lingmodels = {};
-    for (var key in datasets) {
-      lingmodels[datasets[key].name] = lingmodel.getLinguisticModel(datasets[key].data, this.alphabet, this.method, this.derCount);
-    };
+    model = lingmodel.getLinguisticModel(dataset.data, this.alphabet, this.method, this.derCount);
+
     var compares = {};
-    for (var key in this.result) {
-        compares[key] = {};
-        for (var model in lingmodels) {
-            compares[key][model] = lingmodel.compareModels(lingmodels[model], this.result[key].models[model]);
-        };
-        compares[key].total = 0;
-        for (var set in compares[key]) {
-            for (var i = 0; i < compares[key][set].length; i++) {
-                compares[key].total += compares[key][set][i];
-            };
-        };
-        compares[key].total /= this.derCount;
-    };
-    var min = this.alphabet.length * this.alphabet.length;
-    var resDiag;
-    for (var diag in compares) {
-        if (min > compares[diag].total) {
-            min = compares[diag].total;
-            resDiag = diag;
-        }
-    };
-    compares.result = resDiag;
+    for (var catKey in this.result[dataset.name].categories) {
+      compares[catKey] = {};
+      compares[catKey].mean = 0;
+      compares[catKey].deviations = lingmodel.compareModels(model, this.result[dataset.name].categories[catKey]);
+      for (var i = 0; i < compares[catKey].deviations.length; i++) {
+        compares[catKey].mean += compares[catKey].deviations[i];
+      }
+      compares[catKey].mean /= compares[catKey].deviations.length;
+    }
+
+    var minMean = 1;
+    for (var catKey in compares) {
+      if (minMean > compares[catKey].mean) {
+        compares.result = catKey;
+        minMean = compares[catKey].mean;
+      }
+    }
     return compares;
   };
 
