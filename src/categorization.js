@@ -93,5 +93,32 @@ module.exports.getCategorizer = function (alphabet, intervalization_method, derC
     return compares;
   };
 
+  categorizer.categorizeMult = function (datasets) {
+    deviations = {};
+    nums = {};
+    for (var key in datasets) {
+      result = categorizer.categorize(datasets[key]);
+      if (!deviations[result.result]) {
+        deviations[result.result] = result[result.result].mean;
+        nums[result.result] = 1;
+      } else {
+        deviations[result.result] += result[result.result].mean;
+        nums[result.result] ++;
+      }
+    }
+    for (var key in deviations) {
+      deviations[key] /= nums[key];
+    };
+    var min = 1;
+    var minCat;
+    for (var key in deviations) {
+      if (min > deviations[key]) {
+        min = deviations[key];
+        minCat = key;
+      }
+    }
+    return {deviations : deviations, result : minCat};
+  };
+
   return categorizer;
 };

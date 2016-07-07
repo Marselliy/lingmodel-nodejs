@@ -1,6 +1,6 @@
 {
   "name": "lingmodel-nodejs",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Vlad Sarnatsky <sariksariksarik@gmail.com>",
   "description": "Data series categorization module",
   "license": "MIT",

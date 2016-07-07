@@ -51,11 +51,10 @@ categorizer.train(
 **Categorize unknown function:**
 ```js
 categorizer.categorize(
-[
   {
     data : [-5,-6,-7,-8,-9,-10,-11,-12,-13,-14,-15,-16,-17,-18],
     name : 'y'
   }
-]).result;
+).result;
 ```
 Result: **'Linear'**
